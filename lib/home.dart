@@ -106,17 +106,22 @@ const _yourPlaylist = [
   {
     'title': 'Playlist 1',
     'subtitle': 'User',
-    'color': Colors.blueAccent,
+    'color': Color.fromARGB(255, 41, 41, 41),
   },
   {
     'title': 'Playlist 2',
     'subtitle': 'User',
-    'color': Colors.blueAccent,
+    'color': Color.fromARGB(255, 41, 41, 41),
   },
   {
     'title': 'Playlist 3',
     'subtitle': 'User',
-    'color': Colors.blueAccent,
+    'color': Color.fromARGB(255, 41, 41, 41),
+  },
+  {
+    'title': 'Playlist 4',
+    'subtitle': 'User',
+    'color': Color.fromARGB(255, 41, 41, 41),
   }
 ];
 
