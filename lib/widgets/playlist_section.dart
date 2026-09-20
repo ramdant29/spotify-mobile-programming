@@ -28,7 +28,7 @@ class PlaylistSection extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         SizedBox(
-          height: 165,
+          height: 190,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -54,13 +54,23 @@ class PlaylistSection extends StatelessWidget {
                         size: 40,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
                       playlist['title'] as String,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      playlist['subtitle'] as String,
+                      style: const TextStyle(
+                        color: Color(0xffa7a7a7),
+                        fontSize: 12,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

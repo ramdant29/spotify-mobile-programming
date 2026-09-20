@@ -3,6 +3,7 @@ import 'package:spotify/search.dart';
 import 'package:spotify/widgets/drawer_menu.dart';
 import 'package:spotify/widgets/category_grid.dart';
 import 'package:spotify/widgets/playlist_section.dart';
+import 'package:spotify/widgets/mini_player.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -65,27 +66,33 @@ class _HomePageState extends State<HomePage> {
         },
       ),
       body: _pages[_selectedIndex],
-      bottomNavigationBar: Theme(
-        data: Theme.of(context).copyWith(
-          highlightColor: Colors.transparent,
-          splashFactory: NoSplash.splashFactory,
-        ),
-        child: BottomNavigationBar(
-          backgroundColor: const Color(0xff121212),
-          currentIndex: _selectedIndex,
-          selectedItemColor: const Color(0xffffffff),
-          unselectedItemColor: const Color(0xff757575),
-          type: BottomNavigationBarType.fixed,
-          iconSize: 30,
-          selectedFontSize: 10,
-          unselectedFontSize: 10,
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          items: _navBarItems,
-        ),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const MiniPlayer(),
+          Theme(
+            data: Theme.of(context).copyWith(
+              highlightColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
+            ),
+            child: BottomNavigationBar(
+              backgroundColor: const Color(0xff121212),
+              currentIndex: _selectedIndex,
+              selectedItemColor: const Color(0xffffffff),
+              unselectedItemColor: const Color(0xff757575),
+              type: BottomNavigationBarType.fixed,
+              iconSize: 30,
+              selectedFontSize: 10,
+              unselectedFontSize: 10,
+              onTap: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                });
+              },
+              items: _navBarItems,
+            ),
+          ),
+        ],
       ),
     );
   }
