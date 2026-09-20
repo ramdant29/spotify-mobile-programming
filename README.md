@@ -1,21 +1,24 @@
-<<<<<<< HEAD
-# spotify
 
-A new Flutter project.
+# Spotify 
 
-## Getting Started
+Project UTS Mobile Programming 
 
-This project is a starting point for a Flutter application.
+## Installation
 
-A few resources to get you started if this is your first Flutter project:
+Clone Project
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```bash
+git clone https://github.com/ramdant29/spotify-mobile-programming
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# spotify-mobile-programming
->>>>>>> 662151e95efecfd5d842eff3abda715d3eb2879d
+Masuk ke project directory
+
+```bash
+cd spotify-mobile-programming
+```
+
+Flutter pub get
+
+```bash
+flutter pub get
+```
