@@ -4,11 +4,11 @@
 Project UTS Mobile Programming 
 
 ## Anggota Kelompok
-Yohanan Panondang Marulitua Pasaribu - 535240184
-Ramdan Thalib - 535250121
-Haafizh Arkan Tiasno - 535250128
-Ferdiansyah Ramadhan - 535250140
-⁠Fajar Adhy Nugroho - 535250145
+- Yohanan Panondang Marulitua Pasaribu - 535240184
+- Ramdan Thalib - 535250121
+- Haafizh Arkan Tiasno - 535250128
+- Ferdiansyah Ramadhan - 535250140
+- ⁠Fajar Adhy Nugroho - 535250145
 
 ## Installation
 
