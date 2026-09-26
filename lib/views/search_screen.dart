@@ -37,13 +37,12 @@ class SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // background hitam
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search bar
             TextField(
               controller: _controller,
               style: const TextStyle(color: Colors.black),
@@ -51,7 +50,7 @@ class SearchPageState extends State<SearchPage> {
                 hintText: 'Apa yang ingin kamu dengarkan?',
                 hintStyle: const TextStyle(color: Colors.grey),
                 prefixIcon: const Icon(Icons.search, color: Colors.black),
-                fillColor: Colors.white, // tetap putih agar kontras
+                fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -62,7 +61,6 @@ class SearchPageState extends State<SearchPage> {
             ),
             const SizedBox(height: 20),
 
-            // Jika ada riwayat pencarian
             if (_searchHistory.isNotEmpty) ...[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,7 +70,7 @@ class SearchPageState extends State<SearchPage> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // teks putih
+                      color: Colors.white,
                     ),
                   ),
                   TextButton.icon(
@@ -97,7 +95,7 @@ class SearchPageState extends State<SearchPage> {
                         query,
                         style: const TextStyle(
                           color: Colors.white,
-                        ), // teks putih
+                        ),
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.close, color: Colors.white),
@@ -110,13 +108,12 @@ class SearchPageState extends State<SearchPage> {
               ),
             ],
 
-            // Jika riwayat kosong
             if (_searchHistory.isEmpty)
               const Expanded(
                 child: Center(
                   child: Text(
                     'Tidak ada riwayat pencarian',
-                    style: const TextStyle(color: Colors.white), // teks putih
+                    style: TextStyle(color: Colors.white), 
                   ),
                 ),
               ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:spotify/screens/search_screen.dart';
-import 'package:spotify/widgets/drawer_menu.dart';
-import 'package:spotify/widgets/category_grid.dart';
-import 'package:spotify/widgets/playlist_section.dart';
-import 'package:spotify/widgets/mini_player.dart';
+import 'search_screen.dart';
+import '../widgets/drawer_menu.dart';
+import '../widgets/category_grid.dart';
+import '../widgets/playlist_section.dart';
+import '../widgets/mini_player.dart';
+import '../utils/dummy_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,22 +17,22 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   int _drawerSelectedIndex = 0;
 
-  List<String> get _pageTitles => [
-        'Home',
-        'Cari',
-        'Koleksi Kamu',
-        'Buat',
-      ];
+  final List<String> _pageTitles = const [
+    'Home',
+    'Cari',
+    'Koleksi Kamu',
+    'Buat',
+  ];
 
   List<Widget> get _pages => [
         SingleChildScrollView(
           child: Column(
             children: [
-              CategoryGrid(categories: _categories),
+              CategoryGrid(categories: categoryList),
               const SizedBox(height: 24),
               PlaylistSection(
-                title: 'Playlist Kamu', 
-                playlists: _yourPlaylist,
+                title: 'Playlist Kamu',
+                playlists: yourPlaylistList,
               ),
             ],
           ),
@@ -97,40 +98,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-const _categories = [
-  {'name': 'Pop', 'icon': Icons.music_note},
-  {'name': 'Hip Hop', 'icon': Icons.music_note},
-  {'name': 'Jazz', 'icon': Icons.music_note},
-  {'name': 'Rock', 'icon': Icons.music_note},
-  {'name': 'K-Pop', 'icon': Icons.music_note},
-  {'name': 'Dangdut', 'icon': Icons.music_note},
-  {'name': 'Indie', 'icon': Icons.music_note},
-  {'name': 'R&B', 'icon': Icons.music_note},
-];
-
-const _yourPlaylist = [
-  {
-    'title': 'Playlist 1',
-    'subtitle': 'User',
-    'color': Color.fromARGB(255, 41, 41, 41),
-  },
-  {
-    'title': 'Playlist 2',
-    'subtitle': 'User',
-    'color': Color.fromARGB(255, 41, 41, 41),
-  },
-  {
-    'title': 'Playlist 3',
-    'subtitle': 'User',
-    'color': Color.fromARGB(255, 41, 41, 41),
-  },
-  {
-    'title': 'Playlist 4',
-    'subtitle': 'User',
-    'color': Color.fromARGB(255, 41, 41, 41),
-  }
-];
 
 const _navBarItems = [
   BottomNavigationBarItem(
