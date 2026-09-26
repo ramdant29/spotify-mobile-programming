@@ -4,6 +4,7 @@ import '../widgets/drawer_menu.dart';
 import '../widgets/category_grid.dart';
 import '../widgets/playlist_section.dart';
 import '../widgets/mini_player.dart';
+import 'settings_screen.dart';
 import '../utils/dummy_data.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   int _drawerSelectedIndex = 0;
+  bool _isLoggedIn = false;
 
   final List<String> _pageTitles = const [
     'Home',
@@ -42,6 +44,14 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(),
       ];
 
+  void _logout() {
+    setState(() => _isLoggedIn = false);
+    Navigator.of(context).popUntil((route) => route.isFirst);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Anda berhasil logout.')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,9 +71,21 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: CustomDrawer(
         selectedIndex: _drawerSelectedIndex,
+        isLoggedIn: _isLoggedIn,
         onDestinationSelected: (i) {
           setState(() => _drawerSelectedIndex = i);
           Navigator.pop(context);
+          if (i == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => SettingsPage(
+                  isLoggedIn: _isLoggedIn,
+                  onLogout: _isLoggedIn ? _logout : null,
+                ),
+              ),
+            );
+          }
         },
       ),
       body: _pages[_selectedIndex],

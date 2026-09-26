@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CustomDrawer extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
+  final bool isLoggedIn;
 
   const CustomDrawer({
     super.key,
     required this.selectedIndex,
     required this.onDestinationSelected,
+    this.isLoggedIn = false,
   });
 
   @override
@@ -25,36 +27,38 @@ class CustomDrawer extends StatelessWidget {
           selectedIndex: selectedIndex,
           onDestinationSelected: onDestinationSelected,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 16, 6),
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 26,
-                    child: Icon(Icons.person, size: 40),
-                  ),
-                  const SizedBox(width: 14),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'User',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+            if (isLoggedIn) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 16, 6),
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 26,
+                      child: Icon(Icons.person, size: 40),
+                    ),
+                    const SizedBox(width: 14),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'User',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Lihat profil',
-                        style: TextStyle(color: Colors.grey, fontSize: 13),
-                      ),
-                    ],
-                  ),
-                ],
+                        Text(
+                          'Lihat profil',
+                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Divider(color: Color(0xff404040)),
+              const Divider(color: Color(0xff404040)),
+            ],
             const NavigationDrawerDestination(
               icon: Icon(Icons.add_outlined, color: Colors.white, size: 28),
               label: Text('Tambah Akun', style: TextStyle(color: Colors.white, fontSize: 15)),
