@@ -4,6 +4,7 @@ import '../widgets/drawer_menu.dart';
 import '../widgets/category_grid.dart';
 import '../widgets/playlist_section.dart';
 import '../widgets/mini_player.dart';
+import '../widgets/collection_menu.dart';
 import 'settings_screen.dart';
 import '../utils/dummy_data.dart';
 
@@ -60,7 +61,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         const SearchPage(),
-        const SizedBox(),
+        const CollectionMenu(),
         const SizedBox(),
       ];
 
