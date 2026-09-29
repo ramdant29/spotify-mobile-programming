@@ -14,28 +14,39 @@ class CategoryGrid extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 3.0,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+        childAspectRatio: 3.25,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
       ),
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
         return Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF282828),
-            borderRadius: BorderRadius.circular(4),
+            color: const Color(0xFF2A2A2A),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
             children: [
+              const SizedBox(width: 16),
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(category.icon, color: Colors.white, size: 18),
+              ),
               const SizedBox(width: 12),
-              Icon(category.icon, color: Colors.white), 
-              const SizedBox(width: 12),
-              Text(
-                category.name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  category.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
                 ),
               ),
             ],

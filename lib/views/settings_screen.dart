@@ -526,16 +526,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800)),
               ),
               ...options.map(
-                (option) => RadioListTile<String>(
-                  value: option,
-                  groupValue: selected,
-                  activeColor: const Color(0xFF1DB954),
-                  onChanged: (value) {
-                    if (value == null) return;
-                    onSelected(value);
+                (option) => ListTile(
+                  leading: Icon(
+                    selected == option ? Icons.check_circle : Icons.circle_outlined,
+                    color: selected == option ? const Color(0xFF1DB954) : Colors.white70,
+                  ),
+                  title: Text(option, style: const TextStyle(color: Colors.white)),
+                  onTap: () {
+                    onSelected(option);
                     Navigator.pop(context);
                   },
-                  title: Text(option, style: const TextStyle(color: Colors.white)),
                 ),
               ),
             ],

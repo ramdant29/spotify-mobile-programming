@@ -29,13 +29,32 @@ class _HomePageState extends State<HomePage> {
   List<Widget> get _pages => [
         SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: Text(
+                  'Made For You',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              PlaylistSection(
+                title: 'Made For You',
+                playlists: madeForYouList,
+              ),
+              const SizedBox(height: 24),
               CategoryGrid(categories: categoryList),
               const SizedBox(height: 24),
               PlaylistSection(
                 title: 'Playlist Kamu',
                 playlists: yourPlaylistList,
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -57,17 +76,24 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: const Color(0xff121212),
       appBar: AppBar(
+        backgroundColor: const Color(0xff121212),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, size: 28),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: Text(
           _pageTitles[_selectedIndex],
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 32,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color(0xff121212),
-        foregroundColor: const Color(0xffffffff),
-        elevation: 0,
+        titleSpacing: 0,
       ),
       drawer: CustomDrawer(
         selectedIndex: _drawerSelectedIndex,
@@ -88,7 +114,9 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
-      body: _pages[_selectedIndex],
+      body: SafeArea(
+        child: _pages[_selectedIndex],
+      ),
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
