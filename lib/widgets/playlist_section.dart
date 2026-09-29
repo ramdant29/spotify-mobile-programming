@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class PlaylistSection extends StatelessWidget {
   final String title;
   final List<Map<String, dynamic>> playlists;
+  final bool showTitle;
 
   const PlaylistSection({
     super.key,
     required this.title,
     required this.playlists,
+    this.showTitle = true,
   });
 
   @override
@@ -15,18 +17,20 @@ class PlaylistSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
+        if (showTitle) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
+        ],
         SizedBox(
           height: 195,
           child: ListView.builder(

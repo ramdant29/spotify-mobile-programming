@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
               PlaylistSection(
                 title: 'Made For You',
                 playlists: madeForYouList,
+                showTitle: false,
               ),
               const SizedBox(height: 24),
               CategoryGrid(categories: categoryList),
