@@ -6,6 +6,8 @@ import '../widgets/playlist_section.dart';
 import '../widgets/mini_player.dart';
 import '../widgets/collection_menu.dart';
 import 'settings_screen.dart';
+import 'create_screen.dart';
+import 'playlist_detail_screen.dart';
 import '../utils/dummy_data.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,6 +28,41 @@ class _HomePageState extends State<HomePage> {
     'Koleksi Kamu',
     'Buat',
   ];
+
+  Route _detailRoute(Widget page) {
+    return PageRouteBuilder(
+      transitionDuration: const Duration(milliseconds: 420),
+      reverseTransitionDuration: const Duration(milliseconds: 280),
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final offsetTween = Tween<Offset>(
+          begin: const Offset(0, 0.06),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: Curves.easeOutCubic));
+
+        return SlideTransition(
+          position: animation.drive(offsetTween),
+          child: FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
+  void _openPlaylistDetail(Map<String, dynamic> playlist) {
+    Navigator.push(
+      context,
+      _detailRoute(
+        PlaylistDetailScreen(
+          title: playlist['title'] as String,
+          subtitle: playlist['subtitle'] as String,
+          color: playlist['color'] as Color? ?? const Color(0xFF1DB954),
+        ),
+      ),
+    );
+  }
 
   List<Widget> get _pages => [
         SingleChildScrollView(
@@ -48,6 +85,7 @@ class _HomePageState extends State<HomePage> {
                 title: 'Made For You',
                 playlists: madeForYouList,
                 showTitle: false,
+                onPlaylistTap: (index) => _openPlaylistDetail(madeForYouList[index]),
               ),
               const SizedBox(height: 24),
               CategoryGrid(categories: categoryList),
@@ -55,6 +93,7 @@ class _HomePageState extends State<HomePage> {
               PlaylistSection(
                 title: 'Playlist Kamu',
                 playlists: yourPlaylistList,
+                onPlaylistTap: (index) => _openPlaylistDetail(yourPlaylistList[index]),
               ),
               const SizedBox(height: 24),
             ],
@@ -62,7 +101,7 @@ class _HomePageState extends State<HomePage> {
         ),
         const SearchPage(),
         const CollectionMenu(),
-        const SizedBox(),
+        const CreateScreen(),
       ];
 
   void _logout() {
@@ -91,8 +130,8 @@ class _HomePageState extends State<HomePage> {
           _pageTitles[_selectedIndex],
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
+            fontSize: 30,
+            fontWeight: FontWeight.w700,
           ),
         ),
         titleSpacing: 0,
@@ -131,12 +170,22 @@ class _HomePageState extends State<HomePage> {
             child: BottomNavigationBar(
               backgroundColor: const Color(0xff121212),
               currentIndex: _selectedIndex,
-              selectedItemColor: const Color(0xffffffff),
-              unselectedItemColor: const Color(0xff757575),
+              selectedItemColor: const Color(0xFF1DB954),
+              unselectedItemColor: const Color(0xffb3b3b3),
               type: BottomNavigationBarType.fixed,
-              iconSize: 30,
+              iconSize: 28,
               selectedFontSize: 10,
               unselectedFontSize: 10,
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.1,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w500,
+              ),
+              showSelectedLabels: true,
+              showUnselectedLabels: true,
+              elevation: 0,
               onTap: (index) {
                 setState(() {
                   _selectedIndex = index;
