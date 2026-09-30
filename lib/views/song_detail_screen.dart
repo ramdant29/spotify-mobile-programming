@@ -37,7 +37,7 @@ class SongDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(28),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(0.38),
+                      color: color.withValues(alpha: 0.38),
                       blurRadius: 24,
                       offset: const Offset(0, 16),
                     ),
@@ -65,7 +65,7 @@ class SongDetailScreen extends StatelessWidget {
               Text(
                 artist,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 16,
                 ),
               ),
@@ -108,7 +108,7 @@ class SongDetailScreen extends StatelessWidget {
                         activeTrackColor: const Color(0xFF1DB954),
                         inactiveTrackColor: Colors.white24,
                         thumbColor: Colors.white,
-                        overlayColor: const Color(0xFF1DB954).withOpacity(0.25),
+                        overlayColor: const Color(0xFF1DB954).withValues(alpha: 0.25),
                       ),
                       child: Slider(
                         value: 0.42,

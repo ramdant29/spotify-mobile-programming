@@ -50,7 +50,7 @@ class PlaylistDetailScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(22),
                     boxShadow: [
                       BoxShadow(
-                        color: color.withOpacity(0.35),
+                        color: color.withValues(alpha: 0.35),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -121,7 +121,7 @@ class PlaylistDetailScreen extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   itemCount: _tracks.length,
-                  separatorBuilder: (_, __) => const Divider(
+                  separatorBuilder: (_, _) => const Divider(
                     color: Color(0xFF2C2C2C),
                     height: 1,
                   ),
@@ -133,7 +133,7 @@ class PlaylistDetailScreen extends StatelessWidget {
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: color.withOpacity(0.18),
+                          color: color.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Center(
@@ -156,7 +156,7 @@ class PlaylistDetailScreen extends StatelessWidget {
                       subtitle: Text(
                         track['artist']!,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                         ),
                       ),
                       trailing: Row(
@@ -165,7 +165,7 @@ class PlaylistDetailScreen extends StatelessWidget {
                           Text(
                             track['duration']!,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                             ),
                           ),
                           const SizedBox(width: 12),

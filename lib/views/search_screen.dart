@@ -201,7 +201,7 @@ class SearchPageState extends State<SearchPage> {
                       )
                     : ListView.separated(
                         itemCount: results.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        separatorBuilder: (_, _) => const SizedBox(height: 10),
                         itemBuilder: (context, index) {
                           final item = results[index];
                           final title = item['title'] as String;
@@ -317,7 +317,7 @@ class SearchPageState extends State<SearchPage> {
                 Expanded(
                   child: ListView.separated(
                     itemCount: _searchHistory.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 0),
+                    separatorBuilder: (_, _) => const SizedBox(height: 0),
                     itemBuilder: (context, index) {
                       final query = _searchHistory[index];
                       return ListTile(
@@ -367,7 +367,7 @@ class SearchPageState extends State<SearchPage> {
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: _quickFilters.length,
-                            separatorBuilder: (_, __) => const SizedBox(width: 8),
+                            separatorBuilder: (_, _) => const SizedBox(width: 8),
                             itemBuilder: (context, index) {
                               final isSelected = index == 0;
                               return ChoiceChip(
