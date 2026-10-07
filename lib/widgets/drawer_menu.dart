@@ -1,93 +1,107 @@
 import 'package:flutter/material.dart';
-import '../screens/add_account_screen.dart';
+import '../utils/auth_service.dart';
+import '../screens/profile_screen.dart';
 
 class CustomDrawer extends StatelessWidget {
   final int selectedIndex;
-  final ValueChanged<int> onDestinationSelected;
   final bool isLoggedIn;
+  final Function(int) onDestinationSelected;
 
   const CustomDrawer({
     super.key,
     required this.selectedIndex,
+    required this.isLoggedIn,
     required this.onDestinationSelected,
-    this.isLoggedIn = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
+    final currentUser = AuthService.loggedInUser;
 
-    return NavigationDrawerTheme(
-      data: const NavigationDrawerThemeData(
-        indicatorColor: Colors.transparent,
-      ),
-      child: SizedBox(
-        width: screenWidth * 0.85,
-        child: NavigationDrawer(
-          backgroundColor: const Color(0xFF212121),
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (index) {
-            if (index == 0) {
-              Navigator.pop(context); 
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddAccountScreen()),
-              );
-            } else {
-              onDestinationSelected(index);
-            }
-          },
-          children: [
-            if (isLoggedIn) ...[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 16, 6),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 26,
-                      child: Icon(Icons.person, size: 40),
-                    ),
-                    const SizedBox(width: 14),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'User',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+    return Drawer(
+      backgroundColor: const Color(0xFF121212),
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Color(0xFF1F1F1F),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    if (currentUser != null) {
+                      Navigator.pop(context); 
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                      );
+                    }
+                  },
+                  child: Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 28,
+                        backgroundColor: Colors.green,
+                        child: Icon(Icons.person, size: 36, color: Colors.white),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              currentUser?.name ?? 'Belum Masuk',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              currentUser?.email ?? 'Ketuk untuk buat/masuk akun',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Lihat profil',
-                          style: TextStyle(color: Colors.grey, fontSize: 13),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Divider(color: Color(0xff404040)),
-            ],
-            const NavigationDrawerDestination(
-              icon: Icon(Icons.add_outlined, color: Colors.white, size: 28),
-              label: Text('Tambah Akun', style: TextStyle(color: Colors.white, fontSize: 15)),
+              ],
             ),
-            const NavigationDrawerDestination(
-              icon: Icon(Icons.access_time, color: Colors.white, size: 28),
-              label: Text('Baru Diputar', style: TextStyle(color: Colors.white, fontSize: 15)),
-            ),
-            const NavigationDrawerDestination(
-              icon: Icon(Icons.campaign_outlined, color: Colors.white, size: 28),
-              label: Text('Info Terkini', style: TextStyle(color: Colors.white, fontSize: 15)),
-            ),
-            const NavigationDrawerDestination(
-              icon: Icon(Icons.settings_outlined, color: Colors.white, size: 28),
-              label: Text('Pengaturan dan privasi', style: TextStyle(color: Colors.white, fontSize: 15)),
-            ),
-          ],
-        ),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.add_box_outlined, color: Colors.white),
+            title: const Text('Tambah Akun', style: TextStyle(color: Colors.white)),
+            onTap: () => onDestinationSelected(0),
+          ),
+          ListTile(
+            leading: const Icon(Icons.access_time, color: Colors.white),
+            title: const Text('Baru Diputar', style: TextStyle(color: Colors.white)),
+            onTap: () => onDestinationSelected(1),
+          ),
+          ListTile(
+            leading: const Icon(Icons.info_outline, color: Colors.white),
+            title: const Text('Info Terkini', style: TextStyle(color: Colors.white)),
+            onTap: () => onDestinationSelected(2),
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings_outlined, color: Colors.white),
+            title: const Text('Pengaturan dan privasi', style: TextStyle(color: Colors.white)),
+            onTap: () => onDestinationSelected(3),
+          ),
+        ],
       ),
     );
   }

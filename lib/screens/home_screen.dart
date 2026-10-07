@@ -10,7 +10,9 @@ import 'create_screen.dart';
 import 'playlist_detail_screen.dart';
 import 'recent_info_screen.dart';
 import 'recent_player_screen.dart';
+import 'add_account_screen.dart'; 
 import '../utils/dummy_data.dart';
+import '../utils/auth_service.dart'; 
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -22,7 +24,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   int _drawerSelectedIndex = 0;
-  bool _isLoggedIn = false;
 
   final List<String> _pageTitles = const [
     'Home',
@@ -88,12 +89,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _openSettings() {
+    final bool isLoggedIn = AuthService.loggedInUser != null;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => SettingsPage(
-          isLoggedIn: _isLoggedIn,
-          onLogout: _isLoggedIn ? _logout : null,
+          isLoggedIn: isLoggedIn,
+          onLogout: isLoggedIn ? _logout : null,
         ),
       ),
     );
@@ -150,9 +152,9 @@ class _HomePageState extends State<HomePage> {
       ];
 
   void _logout() {
-    setState(() {
-      _isLoggedIn = false;
-    });
+    AuthService.loggedInUser = null;
+
+    setState(() {});
 
     Navigator.of(context).popUntil(
       (route) => route.isFirst,
@@ -167,6 +169,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isLoggedIn = AuthService.loggedInUser != null;
+
     return Scaffold(
       backgroundColor: const Color(0xff121212),
       appBar: AppBar(
@@ -198,7 +202,7 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: CustomDrawer(
         selectedIndex: _drawerSelectedIndex,
-        isLoggedIn: _isLoggedIn,
+        isLoggedIn: isLoggedIn,
         onDestinationSelected: (i) {
           setState(() {
             _drawerSelectedIndex = i;
@@ -206,15 +210,16 @@ class _HomePageState extends State<HomePage> {
 
           Navigator.pop(context);
 
-          if (i == 1) {
+          if (i == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddAccountScreen()),
+            );
+          } else if (i == 1) {
             _openRecentPlayer();
-          }
-
-          if (i == 2) {
+          } else if (i == 2) {
             _openRecentInformation();
-          }
-
-          if (i == 3) {
+          } else if (i == 3) {
             _openSettings();
           }
         },

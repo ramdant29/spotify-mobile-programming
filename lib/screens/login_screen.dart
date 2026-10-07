@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../utils/auth_service.dart';
 import 'signup_screen.dart';
+import 'home_screen.dart'; 
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,13 +15,28 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   void _handleLogin() {
-    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login Berhasil!')),
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
+
+    try {
+      UserAccount matchedUser = AuthService.registeredUsers.firstWhere(
+        (user) => user.email == email && user.password == password,
       );
-    } else {
+
+      AuthService.loggedInUser = matchedUser;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Masukkan email dan password (boleh asal)!')),
+        SnackBar(content: Text('Selamat datang, ${matchedUser.name}!')),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email atau password salah / belum terdaftar!')),
       );
     }
   }
@@ -34,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Login Aplikasi',
+              'Login Spotify Clone',
               style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             const SizedBox(height: 24),
@@ -42,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
               controller: _emailController,
               style: const TextStyle(color: Colors.white),
               decoration: const InputDecoration(
-                labelText: 'Email atau Nama Pengguna',
+                labelText: 'Email',
                 labelStyle: TextStyle(color: Colors.grey),
               ),
             ),
