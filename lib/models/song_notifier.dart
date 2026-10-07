@@ -7,4 +7,18 @@ class SongNotifier {
   static void selectTrack(Map<String, String> newTrack) {
     currentTrack.value = newTrack;
   }
+
+  static void nextTrack() {
+    final currentIndex = tracksList.indexWhere(
+      (track) => track['title'] == currentTrack.value['title'],
+    );
+
+    if (currentIndex != -1 && currentIndex < tracksList.length - 1) {
+      // Pindah ke lagu selanjutnya
+      currentTrack.value = tracksList[currentIndex + 1];
+    } else {
+      // Jika sudah di lagu terakhir, kembali ke lagu pertama
+      currentTrack.value = tracksList[0];
+    }
+  }
 }

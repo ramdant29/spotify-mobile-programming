@@ -27,6 +27,7 @@ class _MiniPlayerState extends State<MiniPlayer>
   @override
   void initState() {
     super.initState();
+
     _barsController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 700),
@@ -38,6 +39,12 @@ class _MiniPlayerState extends State<MiniPlayer>
     );
 
     SongNotifier.currentTrack.addListener(_onSongChanged);
+
+    _progressController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        SongNotifier.nextTrack();
+      }
+    });
   }
 
   void _onSongChanged() {

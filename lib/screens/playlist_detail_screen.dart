@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spotify/models/song_notifier.dart';
-import 'package:spotify/widgets/mini_player.dart'; // Sesuaikan path mini_player kamu
-
+import 'package:spotify/widgets/mini_player.dart'; 
 class PlaylistDetailScreen extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -128,7 +127,7 @@ class PlaylistDetailScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   Expanded(
                     child: ListView.separated(
-                      padding: const EdgeInsets.only(bottom: 80), // Padding agar item paling bawah tidak tertutup MiniPlayer
+                      padding: const EdgeInsets.only(bottom: 80),
                       itemCount: _tracks.length,
                       separatorBuilder: (_, _) => const Divider(
                         color: Color(0xFF2C2C2C),
@@ -196,7 +195,6 @@ class PlaylistDetailScreen extends StatelessWidget {
             ),
           ),
 
-          // Mini Player Melayang di Bagian Bawah
           const Positioned(
             left: 0,
             right: 0,
