@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:spotify/utils/song_notifier.dart';
+import 'package:spotify/models/song_notifier.dart';
 import 'package:spotify/widgets/mini_player.dart'; // Sesuaikan path mini_player kamu
 
 class PlaylistDetailScreen extends StatelessWidget {

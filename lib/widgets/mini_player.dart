@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spotify/widgets/music_player.dart';
-import 'package:spotify/utils/song_notifier.dart';
+import 'package:spotify/models/song_notifier.dart';
 
 class MiniPlayer extends StatefulWidget {
   final String? title;
