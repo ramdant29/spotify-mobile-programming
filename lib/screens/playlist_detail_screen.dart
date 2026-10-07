@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:spotify/models/song_notifier.dart';
+import 'package:spotify/widgets/mini_player.dart'; 
 class PlaylistDetailScreen extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -34,154 +35,173 @@ class PlaylistDetailScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 220,
-                  height: 220,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(22),
-                    boxShadow: [
-                      BoxShadow(
-                        color: color.withValues(alpha: 0.35),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.music_note,
-                    color: Colors.white,
-                    size: 80,
-                  ),
-                ),
-              ),
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Color(0xFFC9C9C9),
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.play_arrow_rounded),
-                      label: const Text('Putar'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1DB954),
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(999),
-                        ),
+                  Center(
+                    child: Container(
+                      width: 220,
+                      height: 220,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(22),
+                        boxShadow: [
+                          BoxShadow(
+                            color: color.withValues(alpha: 0.35),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.music_note,
+                        color: Colors.white,
+                        size: 80,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.favorite_border_rounded, color: Colors.white),
-                    style: IconButton.styleFrom(
-                      backgroundColor: const Color(0xFF202020),
-                      padding: const EdgeInsets.all(12),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: Color(0xFFC9C9C9),
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            if (_tracks.isNotEmpty) {
+                              SongNotifier.selectTrack(_tracks[0]);
+                            }
+                          },
+                          icon: const Icon(Icons.play_arrow_rounded),
+                          label: const Text('Putar'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1DB954),
+                            foregroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.favorite_border_rounded, color: Colors.white),
+                        style: IconButton.styleFrom(
+                          backgroundColor: const Color(0xFF202020),
+                          padding: const EdgeInsets.all(12),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Daftar Lagu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.only(bottom: 80),
+                      itemCount: _tracks.length,
+                      separatorBuilder: (_, _) => const Divider(
+                        color: Color(0xFF2C2C2C),
+                        height: 1,
+                      ),
+                      itemBuilder: (context, index) {
+                        final track = _tracks[index];
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          onTap: () {
+                            SongNotifier.selectTrack(track);
+                          },
+                          leading: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: 0.18),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${index + 1}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            track['title']!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            track['artist']!,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.6),
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                track['duration']!,
+                                style: TextStyle(
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Icon(
+                                Icons.more_vert,
+                                color: Colors.white70,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              const Text(
-                'Daftar Lagu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: _tracks.length,
-                  separatorBuilder: (_, _) => const Divider(
-                    color: Color(0xFF2C2C2C),
-                    height: 1,
-                  ),
-                  itemBuilder: (context, index) {
-                    final track = _tracks[index];
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.18),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${index + 1}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                      title: Text(
-                        track['title']!,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      subtitle: Text(
-                        track['artist']!,
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            track['duration']!,
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: 0.7),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          const Icon(
-                            Icons.more_vert,
-                            color: Colors.white70,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+
+          const Positioned(
+            left: 0,
+            right: 0,
+            bottom: 12,
+            child: MiniPlayer(),
+          ),
+        ],
       ),
     );
   }

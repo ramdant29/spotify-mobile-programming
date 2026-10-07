@@ -57,3 +57,12 @@ const List<Map<String, dynamic>> yourPlaylistList = [
     'color': Color(0xFF404040),
   },
 ];
+
+const List<Map<String, String>> tracksList = [
+  {'title': 'Sunset Lover', 'artist': 'Petit Biscuit', 'duration': '3:23'},
+  {'title': 'Midnight City', 'artist': 'M83', 'duration': '4:00'},
+  {'title': 'Dreams', 'artist': 'The Cranberries', 'duration': '4:32'},
+  {'title': 'Electric Feel', 'artist': 'MGMT', 'duration': '3:49'},
+  {'title': 'Good Life', 'artist': 'OneRepublic', 'duration': '4:13'},
+  {'title': 'Levitating', 'artist': 'Dua Lipa', 'duration': '3:23'},
+];
