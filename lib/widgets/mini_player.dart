@@ -18,15 +18,20 @@ class MiniPlayer extends StatefulWidget {
 
 class _MiniPlayerState extends State<MiniPlayer>
     with TickerProviderStateMixin {
-  bool _isPlaying = false;
   bool _isFavorite = false;
-  
+
   late final AnimationController _barsController;
   late final AnimationController _progressController;
 
   @override
   void initState() {
     super.initState();
+
+    final initialSong = SongNotifier.currentTrack.value;
+    final initialDuration =
+        getTrackDurationSeconds(initialSong);
+
+    globalTotalSeconds.value = initialDuration;
 
     _barsController = AnimationController(
       vsync: this,
@@ -35,61 +40,146 @@ class _MiniPlayerState extends State<MiniPlayer>
 
     _progressController = AnimationController(
       vsync: this,
-      duration: const Duration(minutes: 3),
+      duration: Duration(
+        milliseconds: (initialDuration * 1000).round(),
+      ),
+      value: globalProgress.value,
     );
 
     SongNotifier.currentTrack.addListener(_onSongChanged);
+    globalIsPlaying.addListener(_onPlayingChanged);
+    globalProgress.addListener(_onGlobalProgressChanged);
+
+    _progressController.addListener(_syncProgress);
 
     _progressController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         SongNotifier.nextTrack();
       }
     });
+
+    _onPlayingChanged();
   }
 
   void _onSongChanged() {
-    setState(() {
-      _isPlaying = true;
-    });
+    final currentSong = SongNotifier.currentTrack.value;
+    final duration = getTrackDurationSeconds(currentSong);
 
-    _barsController.repeat();
-    _progressController.reset();
-    _progressController.forward();
+    globalTotalSeconds.value = duration;
+    globalProgress.value = 0.0;
+    globalIsPlaying.value = true;
+
+    _progressController.duration = Duration(
+      milliseconds: (duration * 1000).round(),
+    );
+
+    _progressController
+      ..reset()
+      ..forward();
+
+    if (!_barsController.isAnimating) {
+      _barsController.repeat();
+    }
   }
 
-  @override
-  void dispose() {
-    SongNotifier.currentTrack.removeListener(_onSongChanged);
-    _barsController.dispose();
-    _progressController.dispose();
-    super.dispose();
+  void _onPlayingChanged() {
+    if (globalIsPlaying.value) {
+      if (!_barsController.isAnimating) {
+        _barsController.repeat();
+      }
+
+      if (!_progressController.isAnimating &&
+          _progressController.value < 1.0) {
+        _progressController.forward();
+      }
+    } else {
+      _barsController.stop();
+      _progressController.stop();
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _syncProgress() {
+    final value = _progressController.value;
+
+    if ((globalProgress.value - value).abs() > 0.001) {
+      globalProgress.value = value;
+    }
+  }
+
+  void _onGlobalProgressChanged() {
+    final value = globalProgress.value.clamp(0.0, 1.0);
+
+    if ((_progressController.value - value).abs() > 0.001) {
+      _progressController.value = value;
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _openMusicPlayer() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SpotifyNowPlayingWidget(),
+        builder: (context) =>
+            const SpotifyNowPlayingWidget(),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    SongNotifier.currentTrack.removeListener(
+      _onSongChanged,
+    );
+
+    globalIsPlaying.removeListener(
+      _onPlayingChanged,
+    );
+
+    globalProgress.removeListener(
+      _onGlobalProgressChanged,
+    );
+
+    _progressController.removeListener(
+      _syncProgress,
+    );
+
+    _barsController.dispose();
+    _progressController.dispose();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final bars = List.generate(4, (index) {
       final base = 10 + (index + 1) * 8;
+
       return AnimatedBuilder(
         animation: _barsController,
         builder: (context, child) {
-          final value = _isPlaying
-              ? 0.28 + ((index + 1) * 0.18) + (_barsController.value * 0.6)
+          final value = globalIsPlaying.value
+              ? 0.28 +
+                  ((index + 1) * 0.18) +
+                  (_barsController.value * 0.6)
               : 0.18;
+
           return Container(
             width: 4,
             height: base * value,
-            margin: const EdgeInsets.symmetric(horizontal: 1.5),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 1.5,
+            ),
             decoration: BoxDecoration(
-              color: _isPlaying ? Colors.green : Colors.white54,
+              color: globalIsPlaying.value
+                  ? Colors.green
+                  : Colors.white54,
               borderRadius: BorderRadius.circular(20),
             ),
           );
@@ -100,14 +190,24 @@ class _MiniPlayerState extends State<MiniPlayer>
     return ValueListenableBuilder<Map<String, String>>(
       valueListenable: SongNotifier.currentTrack,
       builder: (context, currentSong, child) {
-        final displayTitle = widget.title ?? currentSong['title'] ?? 'Judul Lagu';
-        final displayArtist = widget.artist ?? currentSong['artist'] ?? 'Nama Artis';
+        final displayTitle =
+            widget.title ??
+            currentSong['title'] ??
+            'Judul Lagu';
+
+        final displayArtist =
+            widget.artist ??
+            currentSong['artist'] ??
+            'Nama Artis';
 
         return GestureDetector(
           onTap: _openMusicPlayer,
           child: Container(
             height: 72,
-            margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            margin: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 4,
+            ),
             decoration: BoxDecoration(
               color: const Color(0xff282828),
               borderRadius: BorderRadius.circular(12),
@@ -120,23 +220,30 @@ class _MiniPlayerState extends State<MiniPlayer>
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    child: AnimatedBuilder(
-                      animation: _progressController,
-                      builder: (context, child) {
+                    child: ValueListenableBuilder<double>(
+                      valueListenable: globalProgress,
+                      builder: (
+                        context,
+                        progress,
+                        child,
+                      ) {
                         return LinearProgressIndicator(
-                          value: _progressController.value,
+                          value: progress.clamp(0.0, 1.0),
                           minHeight: 2.5,
                           backgroundColor: Colors.white12,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
+                          valueColor:
+                              const AlwaysStoppedAnimation<Color>(
                             Color(0xFF1DB954),
                           ),
                         );
                       },
                     ),
                   ),
-
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding:
+                        const EdgeInsets.symmetric(
+                      horizontal: 12,
+                    ),
                     child: Row(
                       children: [
                         Container(
@@ -151,7 +258,8 @@ class _MiniPlayerState extends State<MiniPlayer>
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius:
+                                BorderRadius.circular(8),
                           ),
                           child: const Icon(
                             Icons.music_note,
@@ -162,27 +270,31 @@ class _MiniPlayerState extends State<MiniPlayer>
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
                             children: [
                               Text(
                                 displayTitle,
+                                maxLines: 1,
+                                overflow:
+                                    TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                               ),
                               Text(
                                 displayArtist,
+                                maxLines: 1,
+                                overflow:
+                                    TextOverflow.ellipsis,
                                 style: const TextStyle(
                                   color: Color(0xffa7a7a7),
                                   fontSize: 11,
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
@@ -190,7 +302,8 @@ class _MiniPlayerState extends State<MiniPlayer>
                         IconButton(
                           onPressed: () {
                             setState(() {
-                              _isFavorite = !_isFavorite;
+                              _isFavorite =
+                                  !_isFavorite;
                             });
                           },
                           icon: Icon(
@@ -204,42 +317,50 @@ class _MiniPlayerState extends State<MiniPlayer>
                           ),
                         ),
                         AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 250),
+                          duration:
+                              const Duration(
+                            milliseconds: 250,
+                          ),
                           child: Row(
-                            key: ValueKey(_isPlaying),
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            key: ValueKey(
+                              globalIsPlaying.value,
+                            ),
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
                             children: bars,
                           ),
                         ),
                         IconButton(
-                          onPressed: _openMusicPlayer,
+                          onPressed:
+                              _openMusicPlayer,
                           icon: const Icon(
                             Icons.queue_music_rounded,
                             color: Colors.white,
                             size: 20,
                           ),
                         ),
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: Icon(
-                            _isPlaying
-                                ? Icons.pause_rounded
-                                : Icons.play_arrow_rounded,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isPlaying = !_isPlaying;
-
-                              if (_isPlaying) {
-                                _barsController.repeat();
-                                _progressController.forward();
-                              } else {
-                                _barsController.stop();
-                                _progressController.stop();
-                              }
-                            });
+                        ValueListenableBuilder<bool>(
+                          valueListenable:
+                              globalIsPlaying,
+                          builder: (
+                            context,
+                            isPlaying,
+                            child,
+                          ) {
+                            return IconButton(
+                              padding: EdgeInsets.zero,
+                              icon: Icon(
+                                isPlaying
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                              onPressed: () {
+                                globalIsPlaying.value =
+                                    !globalIsPlaying.value;
+                              },
+                            );
                           },
                         ),
                       ],
