@@ -8,6 +8,8 @@ import '../widgets/collection_menu.dart';
 import 'settings_screen.dart';
 import 'create_screen.dart';
 import 'playlist_detail_screen.dart';
+import 'recent_info_screen.dart';
+import 'recent_player_screen.dart';
 import '../utils/dummy_data.dart';
 
 class HomePage extends StatefulWidget {
@@ -38,7 +40,9 @@ class _HomePageState extends State<HomePage> {
         final offsetTween = Tween<Offset>(
           begin: const Offset(0, 0.06),
           end: Offset.zero,
-        ).chain(CurveTween(curve: Curves.easeOutCubic));
+        ).chain(
+          CurveTween(curve: Curves.easeOutCubic),
+        );
 
         return SlideTransition(
           position: animation.drive(offsetTween),
@@ -58,7 +62,38 @@ class _HomePageState extends State<HomePage> {
         PlaylistDetailScreen(
           title: playlist['title'] as String,
           subtitle: playlist['subtitle'] as String,
-          color: playlist['color'] as Color? ?? const Color(0xFF1DB954),
+          color: playlist['color'] as Color? ??
+              const Color(0xFF1DB954),
+        ),
+      ),
+    );
+  }
+
+  void _openRecentPlayer() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const RecentScreen(),
+      ),
+    );
+  }
+
+  void _openRecentInformation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const RecentInformationScreen(),
+      ),
+    );
+  }
+
+  void _openSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SettingsPage(
+          isLoggedIn: _isLoggedIn,
+          onLogout: _isLoggedIn ? _logout : null,
         ),
       ),
     );
@@ -85,15 +120,25 @@ class _HomePageState extends State<HomePage> {
                 title: 'Made For You',
                 playlists: madeForYouList,
                 showTitle: false,
-                onPlaylistTap: (index) => _openPlaylistDetail(madeForYouList[index]),
+                onPlaylistTap: (index) {
+                  _openPlaylistDetail(
+                    madeForYouList[index],
+                  );
+                },
               ),
               const SizedBox(height: 24),
-              CategoryGrid(categories: categoryList),
+              CategoryGrid(
+                categories: categoryList,
+              ),
               const SizedBox(height: 24),
               PlaylistSection(
                 title: 'Playlist Kamu',
                 playlists: yourPlaylistList,
-                onPlaylistTap: (index) => _openPlaylistDetail(yourPlaylistList[index]),
+                onPlaylistTap: (index) {
+                  _openPlaylistDetail(
+                    yourPlaylistList[index],
+                  );
+                },
               ),
               const SizedBox(height: 24),
             ],
@@ -105,10 +150,18 @@ class _HomePageState extends State<HomePage> {
       ];
 
   void _logout() {
-    setState(() => _isLoggedIn = false);
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    setState(() {
+      _isLoggedIn = false;
+    });
+
+    Navigator.of(context).popUntil(
+      (route) => route.isFirst,
+    );
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Anda berhasil logout.')),
+      const SnackBar(
+        content: Text('Anda berhasil logout.'),
+      ),
     );
   }
 
@@ -121,10 +174,17 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.white,
         elevation: 0,
         leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, size: 28),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
+          builder: (context) {
+            return IconButton(
+              icon: const Icon(
+                Icons.menu,
+                size: 28,
+              ),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
         ),
         title: Text(
           _pageTitles[_selectedIndex],
@@ -140,18 +200,22 @@ class _HomePageState extends State<HomePage> {
         selectedIndex: _drawerSelectedIndex,
         isLoggedIn: _isLoggedIn,
         onDestinationSelected: (i) {
-          setState(() => _drawerSelectedIndex = i);
+          setState(() {
+            _drawerSelectedIndex = i;
+          });
+
           Navigator.pop(context);
+
+          if (i == 1) {
+            _openRecentPlayer();
+          }
+
+          if (i == 2) {
+            _openRecentInformation();
+          }
+
           if (i == 3) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => SettingsPage(
-                  isLoggedIn: _isLoggedIn,
-                  onLogout: _isLoggedIn ? _logout : null,
-                ),
-              ),
-            );
+            _openSettings();
           }
         },
       ),
