@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/add_account_screen.dart';
 
 class CustomDrawer extends StatelessWidget {
   final int selectedIndex;
@@ -25,7 +26,17 @@ class CustomDrawer extends StatelessWidget {
         child: NavigationDrawer(
           backgroundColor: const Color(0xFF212121),
           selectedIndex: selectedIndex,
-          onDestinationSelected: onDestinationSelected,
+          onDestinationSelected: (index) {
+            if (index == 0) {
+              Navigator.pop(context); 
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddAccountScreen()),
+              );
+            } else {
+              onDestinationSelected(index);
+            }
+          },
           children: [
             if (isLoggedIn) ...[
               Padding(
