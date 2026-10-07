@@ -28,14 +28,10 @@ class MyApp extends StatelessWidget {
           unselectedItemColor: Color(0xFF7A7A7A),
           type: BottomNavigationBarType.fixed,
         ),
-        textTheme: Theme.of(context).textTheme.apply(
-          bodyColor: Colors.white,
-          displayColor: Colors.white,
-        ),
+        textTheme: Theme.of(context).textTheme
+            .apply(bodyColor: Colors.white, displayColor: Colors.white),
       ),
       home: const HomePage(),
     );
   }
 }
-
-

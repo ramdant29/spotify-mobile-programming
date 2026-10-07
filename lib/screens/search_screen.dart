@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../features/search_camera_feature.dart';
 import 'song_detail_screen.dart';
 
 class SearchPage extends StatefulWidget {
@@ -98,10 +99,7 @@ class SearchPageState extends State<SearchPage> {
 
         return SlideTransition(
           position: animation.drive(offsetTween),
-          child: FadeTransition(
-            opacity: animation,
-            child: child,
-          ),
+          child: FadeTransition(opacity: animation, child: child),
         );
       },
     );
@@ -142,40 +140,75 @@ class SearchPageState extends State<SearchPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 52,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: TextField(
-                controller: _controller,
-                textInputAction: TextInputAction.search,
-                onChanged: (_) => setState(() {}),
-                onSubmitted: _onSearch,
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-                decoration: InputDecoration(
-                  hintText: 'Apa yang ingin kamu dengarkan?',
-                  hintStyle: const TextStyle(
-                    color: Color(0xFF5F5F5F),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      textInputAction: TextInputAction.search,
+                      onChanged: (_) => setState(() {}),
+                      onSubmitted: _onSearch,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                      textAlignVertical: TextAlignVertical.center,
+                      decoration: InputDecoration(
+                        hintText: 'Cari lagu?',
+                        hintStyle: const TextStyle(
+                          color: Color(0xFF5F5F5F),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Colors.black,
+                          size: 22,
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 42,
+                        ),
+                      ),
+                    ),
                   ),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: Colors.black,
-                    size: 28,
+                ),
+                const SizedBox(width: 10),
+                IconButton(
+                  tooltip: 'Scan lagu dengan kamera',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (_) => const SongCameraScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  color: Colors.white,
+                  iconSize: 26,
+                  style: IconButton.styleFrom(
+                    backgroundColor: const Color(0xFF1F1F1F),
+                    minimumSize: const Size(48, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
             const SizedBox(height: 18),
             if (hasQuery) ...[
@@ -193,10 +226,7 @@ class SearchPageState extends State<SearchPage> {
                     ? const Center(
                         child: Text(
                           'Tidak ada hasil yang cocok',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 18,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 18),
                         ),
                       )
                     : ListView.separated(
@@ -246,7 +276,8 @@ class SearchPageState extends State<SearchPage> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           title,
@@ -367,14 +398,17 @@ class SearchPageState extends State<SearchPage> {
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: _quickFilters.length,
-                            separatorBuilder: (_, _) => const SizedBox(width: 8),
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(width: 8),
                             itemBuilder: (context, index) {
                               final isSelected = index == 0;
                               return ChoiceChip(
                                 label: Text(
                                   _quickFilters[index],
                                   style: TextStyle(
-                                    color: isSelected ? Colors.black : Colors.white,
+                                    color: isSelected
+                                        ? Colors.black
+                                        : Colors.white,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -385,7 +419,9 @@ class SearchPageState extends State<SearchPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(999),
                                 ),
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
                               );
                             },
                           ),
@@ -404,12 +440,13 @@ class SearchPageState extends State<SearchPage> {
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           itemCount: _allResults.length,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 1.25,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                          ),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 1.25,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                              ),
                           itemBuilder: (context, index) {
                             final item = _allResults[index];
                             final color = item['color'] as Color;
@@ -443,9 +480,15 @@ class SearchPageState extends State<SearchPage> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+                                    padding: const EdgeInsets.fromLTRB(
+                                      10,
+                                      10,
+                                      10,
+                                      12,
+                                    ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           title,
@@ -487,3 +530,4 @@ class SearchPageState extends State<SearchPage> {
     );
   }
 }
+
