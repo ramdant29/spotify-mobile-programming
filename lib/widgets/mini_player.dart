@@ -9,7 +9,7 @@ class MiniPlayer extends StatefulWidget {
 
 class _MiniPlayerState extends State<MiniPlayer>
     with SingleTickerProviderStateMixin {
-  bool _isPlaying = true;
+  bool _isPlaying = false;
   bool _isFavorite = false;
   late final AnimationController _controller;
 
@@ -19,7 +19,7 @@ class _MiniPlayerState extends State<MiniPlayer>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 700),
-    )..repeat();
+    );
   }
 
   @override
@@ -138,6 +138,11 @@ class _MiniPlayerState extends State<MiniPlayer>
             onPressed: () {
               setState(() {
                 _isPlaying = !_isPlaying;
+                if (_isPlaying) {
+                  _controller.repeat();
+                } else {
+                  _controller.stop();
+                }
               });
             },
           ),
