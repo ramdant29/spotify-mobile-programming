@@ -3,8 +3,13 @@ import '../models/category_model.dart';
 
 class CategoryGrid extends StatelessWidget {
   final List<CategoryModel> categories; 
+  final Function(int)? onTap;
 
-  const CategoryGrid({super.key, required this.categories});
+  const CategoryGrid({
+    super.key, 
+    required this.categories, 
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,35 +26,38 @@ class CategoryGrid extends StatelessWidget {
       itemCount: categories.length,
       itemBuilder: (context, index) {
         final category = categories[index];
-        return Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF2A2A2A),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              const SizedBox(width: 16),
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(6),
+        return GestureDetector(
+          onTap: () => onTap?.call(index),
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF2A2A2A),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const SizedBox(width: 16),
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(category.icon, color: Colors.white, size: 18),
                 ),
-                child: Icon(category.icon, color: Colors.white, size: 18),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  category.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    category.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

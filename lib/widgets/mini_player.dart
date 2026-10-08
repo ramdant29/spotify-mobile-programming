@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:spotify/widgets/music_player.dart';
 import 'package:spotify/models/song_notifier.dart';
@@ -20,14 +21,13 @@ class _MiniPlayerState extends State<MiniPlayer>
     with TickerProviderStateMixin {
   bool _isPlaying = false;
   bool _isFavorite = false;
-  
+
   late final AnimationController _barsController;
   late final AnimationController _progressController;
 
   @override
   void initState() {
     super.initState();
-
     _barsController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 700),
@@ -77,20 +77,27 @@ class _MiniPlayerState extends State<MiniPlayer>
   @override
   Widget build(BuildContext context) {
     final bars = List.generate(4, (index) {
-      final base = 10 + (index + 1) * 8;
       return AnimatedBuilder(
         animation: _barsController,
         builder: (context, child) {
-          final value = _isPlaying
-              ? 0.28 + ((index + 1) * 0.18) + (_barsController.value * 0.6)
-              : 0.18;
+          final progress = (_barsController.value + (index * 0.25)) % 1.0;
+          final scale = _isPlaying
+              ? 0.3 + 0.7 * (0.5 + 0.5 * math.sin(progress * 2 * math.pi))
+              : 0.2;
+
           return Container(
-            width: 4,
-            height: base * value,
+            width: 3.5,
+            height: 18,
             margin: const EdgeInsets.symmetric(horizontal: 1.5),
-            decoration: BoxDecoration(
-              color: _isPlaying ? Colors.green : Colors.white54,
-              borderRadius: BorderRadius.circular(20),
+            alignment: Alignment.bottomCenter,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 80),
+              width: 3.5,
+              height: 18 * scale,
+              decoration: BoxDecoration(
+                color: _isPlaying ? const Color(0xFF1DB954) : Colors.white38,
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
           );
         },
@@ -231,7 +238,6 @@ class _MiniPlayerState extends State<MiniPlayer>
                           onPressed: () {
                             setState(() {
                               _isPlaying = !_isPlaying;
-
                               if (_isPlaying) {
                                 _barsController.repeat();
                                 _progressController.forward();

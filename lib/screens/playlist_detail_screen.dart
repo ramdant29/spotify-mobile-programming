@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spotify/models/song_notifier.dart';
 import 'package:spotify/widgets/mini_player.dart'; 
+
 class PlaylistDetailScreen extends StatelessWidget {
   final String title;
   final String subtitle;

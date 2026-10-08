@@ -131,6 +131,20 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 24),
               CategoryGrid(
                 categories: categoryList,
+                onTap: (index) {
+                  final category  = categoryList[index];
+
+                  Navigator.push(
+                    context,
+                    _detailRoute(
+                      PlaylistDetailScreen(
+                        title: category.name, 
+                        subtitle: 'Playlist ${category.name} terbaik',
+                        color: const Color(0xFF1DB954), 
+                      ),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 24),
               PlaylistSection(
