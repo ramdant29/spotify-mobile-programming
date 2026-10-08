@@ -1,4 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:spotify/models/song_notifier.dart';
+
+final ValueNotifier<bool> globalIsPlaying =
+    ValueNotifier<bool>(false);
+
+final ValueNotifier<double> globalProgress =
+    ValueNotifier<double>(0.0);
+
+final ValueNotifier<double> globalTotalSeconds =
+    ValueNotifier<double>(180.0);
+
+const Map<String, double> fallbackDurations = {
+  'Sunset Lover': 203.0,
+  'Midnight City': 240.0,
+  'Dreams': 272.0,
+  'Electric Feel': 229.0,
+  'Good Life': 253.0,
+  'Levitating': 203.0,
+};
+
+double getTrackDurationSeconds(Map<String, String> song) {
+  final duration = song['duration'];
+
+  if (duration != null && duration.isNotEmpty) {
+    final parts = duration.split(':');
+
+    if (parts.length == 2) {
+      final minutes = int.tryParse(parts[0]);
+      final seconds = int.tryParse(parts[1]);
+
+      if (minutes != null && seconds != null) {
+        return (minutes * 60 + seconds).toDouble();
+      }
+    }
+  }
+
+  final title = song['title'];
+
+  if (title != null && fallbackDurations.containsKey(title)) {
+    return fallbackDurations[title]!;
+  }
+
+  return 180.0;
+}
+
+String formatDuration(double seconds) {
+  final duration = Duration(
+    seconds: seconds.round(),
+  );
+
+  final minutes = duration.inMinutes;
+  final remainingSeconds = duration.inSeconds % 60;
+
+  return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
+}
 
 class SpotifyNowPlayingWidget extends StatefulWidget {
   const SpotifyNowPlayingWidget({super.key});
@@ -10,9 +65,18 @@ class SpotifyNowPlayingWidget extends StatefulWidget {
 
 class _SpotifyNowPlayingWidgetState
     extends State<SpotifyNowPlayingWidget> {
-  bool isPlaying = false;
   bool isShuffleOn = false;
-  double progress = 0.0;
+  bool isLiked = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final currentSong = SongNotifier.currentTrack.value;
+    final duration = getTrackDurationSeconds(currentSong);
+
+    globalTotalSeconds.value = duration;
+  }
 
   void showMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -25,10 +89,247 @@ class _SpotifyNowPlayingWidgetState
     );
   }
 
+  void showTimer() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF282828),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Sleep Timer',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: const Icon(
+                    Icons.timer_outlined,
+                    color: Colors.white,
+                  ),
+                  title: const Text(
+                    '5 menit',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showMessage('Timer 5 menit');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.timer_outlined,
+                    color: Colors.white,
+                  ),
+                  title: const Text(
+                    '10 menit',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showMessage('Timer 10 menit');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.timer_outlined,
+                    color: Colors.white,
+                  ),
+                  title: const Text(
+                    '30 menit',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showMessage('Timer 30 menit');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.timer_outlined,
+                    color: Colors.white,
+                  ),
+                  title: const Text(
+                    'Akhir lagu',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showMessage('Timer sampai akhir lagu');
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void showDevices() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF282828),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Connect to a device',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: const Icon(
+                    Icons.smartphone_rounded,
+                    color: Colors.white,
+                  ),
+                  title: const Text(
+                    'This device',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showMessage('This device dipilih');
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.computer_rounded,
+                    color: Colors.white,
+                  ),
+                  title: const Text(
+                    'Computer',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showMessage('Computer dipilih');
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void showQueue() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF181818),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.62,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 12, 12),
+                  child: Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          'Queue',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.queue_music_rounded,
+                          color: Colors.white24,
+                          size: 64,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Queue masih kosong',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          'Tambahkan lagu untuk melihat antrean.',
+                          style: TextStyle(
+                            color: Colors.white54,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF542523),
+      backgroundColor: const Color(0xFF121212),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -73,13 +374,13 @@ class _SpotifyNowPlayingWidgetState
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF874039),
-              Color(0xFF6D2F2B),
-              Color(0xFF542523),
+              Color(0xFF2A2A2A),
+              Color(0xFF121212),
+              Color(0xFF121212),
             ],
             stops: [
               0.0,
-              0.48,
+              0.5,
               1.0,
             ],
           ),
@@ -87,9 +388,8 @@ class _SpotifyNowPlayingWidgetState
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final width = constraints.maxWidth;
               final artworkSize =
-                  (width - 48).clamp(0.0, 520.0);
+                  (constraints.maxWidth - 48).clamp(0.0, 520.0);
 
               return SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
@@ -99,304 +399,340 @@ class _SpotifyNowPlayingWidgetState
                   24,
                   28,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: SizedBox(
-                        width: artworkSize,
-                        height: artworkSize,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD15D55),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 28),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                height: 29,
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            showMessage('Add to library');
-                          },
-                          icon: const Icon(
-                            Icons.add_circle_outline_rounded,
-                            color: Colors.white,
-                            size: 29,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        trackHeight: 3,
-                        activeTrackColor: Colors.white,
-                        inactiveTrackColor: Colors.white30,
-                        thumbColor: Colors.white,
-                        overlayColor:
-                            Colors.white.withValues(alpha: 0.12),
-                        thumbShape:
-                            const RoundSliderThumbShape(
-                          enabledThumbRadius: 5,
-                        ),
-                        overlayShape:
-                            const RoundSliderOverlayShape(
-                          overlayRadius: 13,
-                        ),
-                      ),
-                      child: Slider(
-                        value: progress,
-                        min: 0,
-                        max: 1,
-                        onChanged: (value) {
-                          setState(() {
-                            progress = value;
-                          });
-                        },
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '0:00',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          Text(
-                            '-0:00',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                child: ValueListenableBuilder<Map<String, String>>(
+                  valueListenable: SongNotifier.currentTrack,
+                  builder: (context, song, child) {
+                    final title =
+                        song['title'] ?? 'Judul Lagu';
+
+                    final artist =
+                        song['artist'] ?? 'Nama Artis';
+
+                    return Column(
                       crossAxisAlignment:
-                          CrossAxisAlignment.center,
+                          CrossAxisAlignment.stretch,
                       children: [
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              isShuffleOn = !isShuffleOn;
-                            });
-                          },
-                          padding: EdgeInsets.zero,
-                          icon: Icon(
-                            Icons.shuffle_rounded,
-                            color: isShuffleOn
-                                ? const Color(0xFF1ED760)
-                                : Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            showMessage('Previous');
-                          },
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(
-                            Icons.skip_previous_rounded,
-                            color: Colors.white,
-                            size: 43,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isPlaying = !isPlaying;
-                            });
-                          },
-                          child: Container(
-                            width: 68,
-                            height: 68,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              isPlaying
-                                  ? Icons.pause_rounded
-                                  : Icons.play_arrow_rounded,
-                              color: const Color(0xFF542523),
-                              size: 39,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            showMessage('Next');
-                          },
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(
-                            Icons.skip_next_rounded,
-                            color: Colors.white,
-                            size: 43,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            showMessage('Timer');
-                          },
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(
-                            Icons.timer_outlined,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 25),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: IconButton(
-                              onPressed: () {
-                                showMessage('Devices');
-                              },
-                              padding: EdgeInsets.zero,
-                              icon: const Icon(
-                                Icons.devices_other_outlined,
+                        Center(
+                          child: SizedBox(
+                            width: artworkSize,
+                            height: artworkSize,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1DB954),
+                                borderRadius:
+                                    BorderRadius.circular(6),
+                              ),
+                              child: const Icon(
+                                Icons.music_note_rounded,
                                 color: Colors.white,
-                                size: 26,
+                                size: 100,
                               ),
                             ),
                           ),
                         ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: IconButton(
+                        const SizedBox(height: 28),
+                        Row(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    title,
+                                    maxLines: 1,
+                                    overflow:
+                                        TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 22,
+                                      fontWeight:
+                                          FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    artist,
+                                    maxLines: 1,
+                                    overflow:
+                                        TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
                               onPressed: () {
-                                showMessage('Share');
+                                setState(() {
+                                  isLiked = !isLiked;
+                                });
+                              },
+                              icon: Icon(
+                                isLiked
+                                    ? Icons.favorite_rounded
+                                    : Icons
+                                        .favorite_border_rounded,
+                                color: isLiked
+                                    ? const Color(0xFF1DB954)
+                                    : Colors.white,
+                                size: 29,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        ValueListenableBuilder<double>(
+                          valueListenable: globalProgress,
+                          builder:
+                              (context, progress, child) {
+                            return SliderTheme(
+                              data: SliderTheme.of(context)
+                                  .copyWith(
+                                trackHeight: 3,
+                                activeTrackColor:
+                                    Colors.white,
+                                inactiveTrackColor:
+                                    Colors.white30,
+                                thumbColor: Colors.white,
+                                overlayColor: Colors.white
+                                    .withValues(alpha: 0.12),
+                                thumbShape:
+                                    const RoundSliderThumbShape(
+                                  enabledThumbRadius: 5,
+                                ),
+                                overlayShape:
+                                    const RoundSliderOverlayShape(
+                                  overlayRadius: 13,
+                                ),
+                              ),
+                              child: Slider(
+                                value: progress
+                                    .clamp(0.0, 1.0),
+                                min: 0,
+                                max: 1,
+                                onChanged: (value) {
+                                  globalProgress
+                                      .value = value;
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                        ValueListenableBuilder<double>(
+                          valueListenable: globalProgress,
+                          builder:
+                              (context, progress, child) {
+                            return ValueListenableBuilder<double>(
+                              valueListenable:
+                                  globalTotalSeconds,
+                              builder: (
+                                context,
+                                totalSeconds,
+                                child,
+                              ) {
+                                final currentSeconds =
+                                    totalSeconds *
+                                        progress;
+
+                                final remainingSeconds =
+                                    totalSeconds -
+                                        currentSeconds;
+
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets
+                                          .symmetric(
+                                    horizontal: 4,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment
+                                            .spaceBetween,
+                                    children: [
+                                      Text(
+                                        formatDuration(
+                                          currentSeconds,
+                                        ),
+                                        style:
+                                            const TextStyle(
+                                          color:
+                                              Colors.white70,
+                                          fontSize: 11,
+                                          fontWeight:
+                                              FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        '-${formatDuration(remainingSeconds)}',
+                                        style:
+                                            const TextStyle(
+                                          color:
+                                              Colors.white70,
+                                          fontSize: 11,
+                                          fontWeight:
+                                              FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  isShuffleOn =
+                                      !isShuffleOn;
+                                });
+                              },
+                              padding: EdgeInsets.zero,
+                              icon: Icon(
+                                Icons.shuffle_rounded,
+                                color: isShuffleOn
+                                    ? const Color(0xFF1ED760)
+                                    : Colors.white,
+                                size: 28,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                showMessage('Previous');
                               },
                               padding: EdgeInsets.zero,
                               icon: const Icon(
-                                Icons.share_outlined,
+                                Icons
+                                    .skip_previous_rounded,
                                 color: Colors.white,
-                                size: 26,
+                                size: 43,
                               ),
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: IconButton(
+                            ValueListenableBuilder<bool>(
+                              valueListenable:
+                                  globalIsPlaying,
+                              builder: (
+                                context,
+                                isPlaying,
+                                child,
+                              ) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    globalIsPlaying.value =
+                                        !globalIsPlaying
+                                            .value;
+                                  },
+                                  child: Container(
+                                    width: 68,
+                                    height: 68,
+                                    decoration:
+                                        const BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      isPlaying
+                                          ? Icons
+                                              .pause_rounded
+                                          : Icons
+                                              .play_arrow_rounded,
+                                      color: const Color(
+                                          0xFF121212),
+                                      size: 39,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            IconButton(
                               onPressed: () {
-                                showMessage('Queue');
+                                SongNotifier.nextTrack();
                               },
                               padding: EdgeInsets.zero,
                               icon: const Icon(
-                                Icons.queue_music_rounded,
+                                Icons.skip_next_rounded,
                                 color: Colors.white,
-                                size: 27,
+                                size: 43,
                               ),
                             ),
-                          ),
+                            IconButton(
+                              onPressed: showTimer,
+                              padding: EdgeInsets.zero,
+                              icon: const Icon(
+                                Icons.timer_outlined,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    Container(
-                      padding: const EdgeInsets.fromLTRB(
-                        18,
-                        17,
-                        18,
-                        19,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF8B4039)
-                            .withValues(alpha: 0.72),
-                        borderRadius:
-                            BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Release countdown',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          Container(
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: Colors.white12,
-                              borderRadius:
-                                  BorderRadius.circular(20),
-                            ),
-                            child: FractionallySizedBox(
-                              alignment: Alignment.centerLeft,
-                              widthFactor: 0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.circular(20),
+                        const SizedBox(height: 25),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Align(
+                                alignment:
+                                    Alignment.centerLeft,
+                                child: IconButton(
+                                  onPressed: showDevices,
+                                  padding: EdgeInsets.zero,
+                                  icon: const Icon(
+                                    Icons
+                                        .devices_other_outlined,
+                                    color: Colors.white,
+                                    size: 26,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 14),
-                          const Text(
-                            '',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
+                            Expanded(
+                              child: Align(
+                                alignment:
+                                    Alignment.center,
+                                child: IconButton(
+                                  onPressed: () {
+                                    showMessage('Share');
+                                  },
+                                  padding: EdgeInsets.zero,
+                                  icon: const Icon(
+                                    Icons.share_outlined,
+                                    color: Colors.white,
+                                    size: 26,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            '',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
+                            Expanded(
+                              child: Align(
+                                alignment:
+                                    Alignment.centerRight,
+                                child: IconButton(
+                                  onPressed: showQueue,
+                                  padding: EdgeInsets.zero,
+                                  icon: const Icon(
+                                    Icons
+                                        .queue_music_rounded,
+                                    color: Colors.white,
+                                    size: 27,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                          ],
+                        ),
+                      ],
+                    );
+                  },
                 ),
               );
             },
